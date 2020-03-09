@@ -1,0 +1,19 @@
+{
+  "name": "CoronavirusCases",
+  "version": "1.0.0",
+  "description": "Alexa app to for information on the novel coronavirus.",
+  "main": "index.js",
+  "author": "Karthik Nandula",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ."
+  },
+  "dependencies": {
+    "ask-sdk-core": "^2.7.0",
+    "ask-sdk-model": "^1.26.0",
+    "cheerio": "^1.0.0-rc.3",
+    "i18next": "^19.3.2",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5"
+  }
+}
