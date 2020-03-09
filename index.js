@@ -7,7 +7,7 @@ const Alexa = require('ask-sdk-core');
 // i18n library dependency, we use it below in a localisation interceptor
 const i18n = require('i18next');
 // i18n strings for all supported locales
-const languageStrings = null;//require('./languageStrings');
+const languageStrings = require('./languageStrings');
 const rp = require("request-promise");
 const cheerio = require("cheerio");
 
