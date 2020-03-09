@@ -11,4 +11,4 @@ Things I need to work on:
 
 Thanks a lot for taking the time to view my code. And the README.
 
-- Karthik Nandula
+Karthik Nandula
