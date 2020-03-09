@@ -1,0 +1,17 @@
+# Ignore some files for upload:
+
+# Node.js packages
+node_modules/
+
+# Lock files
+yarn.lock
+packages-lock.json
+
+# macOS/OS files
+.DS_Stroe
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
