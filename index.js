@@ -11,110 +11,136 @@ const languageStrings = require('./languageStrings');
 const rp = require("request-promise");
 const cheerio = require("cheerio");
 
+const result = { // Variables which will store each row from the table in its respective country.
+    China: null,
+    SK:    null,
+    Italy: null,
+    UK:    null,
+    USA:   null,
+    India: null,
+    WorldWide: null,
+    Deaths:    null,
+    Recovered: null,
+};
+
+var message;
+
 //=================================Web Scraping==============================================
 
-let China = "";
-let SK = "";
-let Italy = "";
-let UK = "";
-let USA = "";
-let India = "";
-let WorldWide = "";
-let Deaths = "";
-let Recovered = "";
+async function scrapeStats() {
+    const doc = await rp.get("https://www.worldometers.info/coronavirus/");
+    const $ = cheerio.load(doc);
 
-async function main() {
-    const result = await rp.get("https://www.worldometers.info/coronavirus/");
-    const $ = cheerio.load(result);
+    let NamesArr=[]; // An Array of all the names of the countries retrieved from the website.
+    let ChinaFinder='China';
+    let ItalyFinder='Italy';
+    let SKFinder='S. Korea';
+    let UKFinder='UK';
+    let USAFinder='USA';
+    let IndiaFinder='India';
 
-    $("#main_table_countries > tbody:nth-child(2) > tr:nth-child(1)").each((i,el) => {
-        const item = $(el).text();
-        China = item;
-    }); 
+    $('#main_table_countries').find('tbody').eq(0).find('tr').each((i,el)=>{ // Pushes all the names of the countries to the array called NamesArray.
+        NamesArr.push($(el).find('td').eq(0).text().trim())
+    })
 
-    $("#main_table_countries > tbody:nth-child(2) > tr:nth-child(3)").each((i,el) => {
+    let ItalyIndex= NamesArr.indexOf(ItalyFinder) + 1;// Adding one because in the table in the website, the indexing starts at 1.
+    let ChinaIndex= NamesArr.indexOf(ChinaFinder) + 1;
+    let SKIndex= NamesArr.indexOf(SKFinder) + 1;
+    let USAIndex= NamesArr.indexOf(USAFinder) + 1;
+    let UKIndex= NamesArr.indexOf(UKFinder) + 1;
+    let IndiaIndex= NamesArr.indexOf(IndiaFinder) + 1;
+
+    $(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${ItalyIndex})`).each((i,el) => {
         const item = $(el).text();
-        SK = item;
-    });
-    
-    $("#main_table_countries > tbody:nth-child(2) > tr:nth-child(2)").each((i,el) => {
-        const item = $(el).text();
-        Italy = item;
-    });
-    
-    $("#main_table_countries > tbody:nth-child(2) > tr:nth-child(13)").each((i,el) => {
-        const item = $(el).text();
-        UK = item;
-    });
-    
-    $("#main_table_countries > tbody:nth-child(2) > tr:nth-child(9)").each((i,el) => {
-        const item = $(el).text();
-        USA = item;
-    });
-    
-    $("#main_table_countries > tbody:nth-child(2) > tr:nth-child(34)").each((i,el) => {
-        const item = $(el).text();
-        India = item;
-    });
-    
-    $("#main_table_countries > tbody:nth-child(3) > tr > td:nth-child(2)").each((i,el) => {
-        const item = $(el).text();
-        WorldWide = item;
+        result.Italy = item;
     });
 
-    $("#main_table_countries > tbody:nth-child(3) > tr > td:nth-child(4)").each((i,el) => {
+    $(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${ChinaIndex})`).each((i,el) => {
         const item = $(el).text();
-        Deaths = item;
+        result.China = item;
     });
 
-    $("#main_table_countries > tbody:nth-child(3) > tr > td:nth-child(6)").each((i,el) => {
+    $(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${SKIndex})`).each((i,el) => {
         const item = $(el).text();
-        Recovered = item;
+        result.SK = item;
     });
-    
 
-    China = China.trim().split(" ").filter(item => item)[1];
-    SK = SK.trim().split(" ").filter(item => item)[2];
-    Italy = Italy.trim().split(" ").filter(item => item)[1];
-    UK = UK.trim().split(" ").filter(item => item)[1];
-    USA = USA.trim().split(" ").filter(item => item)[1];
-    India = India.trim().split(" ").filter(item => item)[1];
+    $(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${USAIndex})`).each((i,el) => {
+        const item = $(el).text();
+        result.USA = item;
+    });
+
+    $(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${UKIndex})`).each((i,el) => {
+        const item = $(el).text();
+        result.UK = item;
+    });
+
+    $(`#main_table_countries > tbody:nth-child(2) > tr:nth-child(${IndiaIndex})`).each((i,el) => {
+        const item = $(el).text();
+        result.India = item;
+    });
+
+    $("#main_table_countries > tbody:nth-child(3) > tr > td:nth-child(2)")
+        .each((_, el) =>
+            result.WorldWide = $(el).text());
+
+    $("#main_table_countries > tbody:nth-child(3) > tr > td:nth-child(4)")
+        .each((_, el) =>
+            result.Deaths = $(el).text());
+
+    $("#main_table_countries > tbody:nth-child(3) > tr > td:nth-child(6)")
+        .each((_, el) =>
+            result.Recovered = $(el).text());
+
+    //Function than cleans up the input so that it's just the number of cases on it's own instead of the whole row.
+    const cleanInput = input =>
+        input.trim().split(" ").filter(item => !!item);
+
+    result.China = cleanInput(result.China)[1];
+    result.SK = cleanInput(result.SK)[2];
+    result.Italy = cleanInput(result.Italy)[1];
+    result.UK = cleanInput(result.UK)[1];
+    result.USA = cleanInput(result.USA)[1];
+    result.India = cleanInput(result.India)[1];
+
+    return result; //returns the variables containing the values needed.
+
 }
-main();
 
 //==========================================End of Web Scraping=================================
 
-const LaunchRequestHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
-    },
-    handle(handlerInput) {
-        const speakOutput = handlerInput.t('WELCOME_MSG');
+scrapeStats().then(result => {
+    const {
+        China, SK, Italy, UK, USA,
+        India, WorldWide, Deaths, Recovered
+    } = result;  // Extract variables from the result, using object destructuring.
 
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput)
-            .getResponse();
-    }
-};
-
-//What I need to do is that if HelloWorldIntent is invoked, I will run the same functionality as the launch request.
-
-//const SKILL_NAME = "Coronavirus Cases";
+    message = `In China there are ${China} cases. \
+                In Italy there are ${Italy} cases. \
+                In South Korea there are ${SK} cases. \
+                In USA there are ${USA} cases. \
+                In the UK there are ${UK} cases. \
+                In India there are ${India} cases. \
+                Worldwide there are ${WorldWide} cases, \
+                ${Deaths} deaths, and ${Recovered} recovered cases.`
+                    .replace(/[ ]+/g, ' ');
+    
+});
 
 const HelloWorldIntentHandler = {
     canHandle(handlerInput) {
-        return (Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HelloWorldIntent');
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest'
+            || (Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HelloWorldIntent')
+            || (Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'GetNewFactIntent');
     },
     handle(handlerInput) {
-        const speakOutput = handlerInput.t('HELLO_MSG');
-        const message = "In China there are, "+China+" cases. In Italy there are "+Italy+" cases. In South Korea there are "+SK+" cases. In USA there are "+USA+" cases. In the UK there are "+UK+" cases. In India there are "+India+" cases. Worldwide there are "+WorldWide+" cases, "+Deaths+" deaths, and "+Recovered+" recovered cases.";
+        message = message;
 
         return handlerInput.responseBuilder
             .speak(message)
             .withSimpleCard("Coronavirus Cases", message)
-            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
             .getResponse();
     }
 };
@@ -239,7 +265,7 @@ const LocalisationRequestInterceptor = {
  * */
 exports.handler = Alexa.SkillBuilders.custom()
     .addRequestHandlers(
-        LaunchRequestHandler,
+        //LaunchRequestHandler,
         HelloWorldIntentHandler,
         HelpIntentHandler,
         CancelAndStopIntentHandler,
