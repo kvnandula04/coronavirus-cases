@@ -8,7 +8,6 @@
 module.exports = {
     en: {
         translation: {
-            WELCOME_MSG: 'Welcome, you can say, "ask Coronavirus Cases for today\'s report" or "ask Coronavirus Cases for today\'s count". What would you like to try?',
             HELP_MSG: 'You can say ask Coronavirus Cases for today\'s report or open Coronavirus Cases. How can I help?',
             GOODBYE_MSG: 'Make sure you wash your hands and stay hygienic. Let\'s battle this together!',
             REFLECTOR_MSG: 'You just triggered {{intentName}}',
